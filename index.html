@@ -26,69 +26,216 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section data-markdown>
-					<textarea data-template>
-						## OOP
-				
-						A paragraph with some text and a [link](http://hakim.se).
 
-						Note:
-						co tutaj?
-					</textarea>
-				</section>
+				<!-- ###################################### OOP ###################################### -->
+
 				<section>
-
 					<section>
 						<p class="fragment" data-fragment-index="2">Refleksja</p>
 						<img src="lib/imgs/reflection_001.gif" />
+
 						<aside class="notes">
-							- PHP <br />
-							- ArrayAccess? <br />
+							intro
 						</aside>
 					</section>
 
 					<section>
 						Refleksja?
+
+						<aside class="notes">
+							<p>PYT: Co to jest refleksja?</p>
+							<p>zdolność programu do analizy/modyfikacji własnej struktury podczas jego uruchomienia</p>
+						</aside>
 					</section>
 
 					<section>
-						<p>get_class()</p>
-						<p>get_class_methods()</p>
-						<p>method_exists()</p>
-						<p>...</p>
+						<code>get_class($user)</code>
+						<code>get_class_methods(User::class)</code>
+						<code>method_exists($user, 'promoteToAdmin')</code>
+
+						<aside class="notes">
+							<p>proste funkcje globalne w PHP - namiastka refleksji</p>
+						</aside>
 					</section>
 
 					<section>
+						<h3>Reflection API</h3>
 						<p>$reflector = new ReflectionObject($user)</p>
 						<p>$doc = new ReflectionMethod(User::class)->getDocComment()</p>
+
+						<aside class="notes">
+							<p>poważniejsza refleksja z Reflection API</p>
+						</aside>
 					</section>
 
 					<section>
-						<h3>Ograniczenia</h3>
+						<h3>Ograniczenia?</h3>
 					
-						<p>__CALL()</p>
-						
+						<aside class="notes">
+							<p>__CALL()</p>
+							<p>dodawanie / usuwanie metod (runkit extension)</p>
+						</aside>
 					</section>
 
 					<section>
 						<h3>Przykłady</h3>
 
-						<p>Laravel</p>
+						<p>Laravel (DI, macros itp.)</p>
 						<p>phpDocumentor</p>
 						<p>PHPUnit</p>
 						<p>Mockery</p>
 						<p>mpociot/laravel-test-factory-helper</p>
 					</section>
 				</section>
+
+				<!-- ###################################### PHP ###################################### -->
+
 				<section data-markdown>
 					<textarea data-template>
-						## Laravel
+						## PHP ??
 				
 						Note:
-						- tap function
-						- higher order messages
+						- co tutaj?
 					</textarea>
 				</section>
+
+				<!-- ###################################### LARAVEL ###################################### -->
+
+				<section data-markdown>
+					<section>
+						<p class="fragment" data-fragment-index="2">tap()</p>
+						<img src="lib/imgs/tap_001.gif" />
+					
+						<aside class="notes">
+							intro
+						</aside>
+					</section>
+
+					<section>
+						<p>tap()?</p>
+					
+						<aside class="notes">
+							<p>co to? dyskusja?</p>
+							<ul>
+								<li>zapożyczona z rubiego</li>
+								<li>może być kontrowersyjna</li>
+								<li>zależnie od użycia, może zmniejszać albo zwiększać czytelność kodu</li>
+							</ul>
+							<p>funkcja z dwoma* argumentami, która wywołuje callback (2gi arg) podając mu pierwszy argument i zwraca wartość podaną w pierwszym argumencie</p>
+						</aside>
+					</section>
+
+					<section>
+						<p>może bardziej w tym klimacie przykład? $user = tap($user)->update($request->all());</p>
+						<pre><code class="php" data-trim data-noescape>
+							public function withoutTap()
+							{
+								$user = new User();
+								$user->save();
+								return $user;
+							}
+						</code></pre>
+
+						<aside class="notes">
+							wersja bez tap - wymaga stworzenia zmiennej tymczasowej tylko po to by wywołać na niej metodę
+						</aside>
+					</section>
+
+					<section>
+						<pre><code class="php" data-trim data-noescape>
+							public function withTapA()
+							{
+								return tap(new User(), function($user) {
+									$user->save();
+								});
+							}
+						</code></pre>
+
+						<aside class="notes">
+							wersja z tap - 1
+						</aside>
+					</section>
+
+					<section>
+						<pre><code class="php" data-trim data-noescape>
+							public function withTapB()
+							{
+								return tap(new User())->save();
+							}
+						</code></pre>
+
+						<aside class="notes">
+							wersja z tap - 2 - pod spodek użyje 
+						</aside>
+					</section>
+
+					<section>
+						<pre><code class="php" data-trim data-noescape>
+							function tap($value, $callback)
+							{
+								$callback($value);
+
+								return $value;
+							}
+						</code></pre>
+
+						<aside class="notes">
+							uproszczona implementacja (bez HigherOrderTapProxy) 
+						</aside>
+					</section>
+
+					<section>
+						<pre><code class="php" data-trim data-noescape>
+							function tap($value, $callback = null)
+							{
+								if (is_null($callback)) {
+									return new HigherOrderTapProxy($value);
+								}
+
+								$callback($value);
+
+								return $value;
+							}
+						</code></pre>
+
+						<aside class="notes">
+							<p>aktualna implementacja w Laravelu</p>
+							<pre>
+								class HigherOrderTapProxy
+								{
+									public $target;
+
+									public function __construct($target)
+									{
+										$this->target = $target; //target in our case is $user model
+									}
+
+									//when we call a method it will trigger this function
+									public function __call($method, $parameters)
+									{
+										$this->target->{$method}(...$parameters); //$user->update($parameters)
+
+										return $this->target; //return $user;
+									}
+								}
+							</pre>
+						</aside>
+					</section>
+
+					<section>
+						method chains
+					</section>
+
+					<section>
+						<p>examples in the wild / laravel</p>
+						<p>underscore.js</p>
+						<p>...?</p>
+					</section>
+
+				</section>
+
+				<!-- ###################################### TOOLS ###################################### -->
+
 				<section data-markdown>
 					<textarea data-template>
 						## Wzorce, dobre praktyki i narzędzia
@@ -99,6 +246,9 @@
 						- nowy debugbar z hydrated models
 					</textarea>
 				</section>
+
+				<!-- ###################################### FRONTEND ###################################### -->
+				
 				<section data-markdown>
 					<textarea data-template>
 						## Frontend
@@ -107,6 +257,8 @@
 						co tutaj?
 					</textarea>
 				</section>
+
+
 
 
 				<section>
