@@ -11,8 +11,8 @@
 		<link rel="stylesheet" href="css/theme/night.css"> <!-- black / white / league / beige / sky / night / serif / simple / solarized -->
 
 		<!-- Theme used for syntax highlighting of code -->
-		<!-- <link rel="stylesheet" href="lib/css/monokai.css"> -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link rel="stylesheet" href="lib/css/monokai.css">
+		<!-- <link rel="stylesheet" href="lib/css/zenburn.css"> -->
 
 		<!-- Printing and PDF exports -->
 		<script>
@@ -28,44 +28,70 @@
 			<div class="slides">
 
 				<!-- ###################################### OOP ###################################### -->
-
 				<section>
 					<section>
-						<p class="fragment" data-fragment-index="2">Refleksja</p>
+						<h4 class="fragment" data-fragment-index="2">Refleksja</h4>
 						<img src="lib/imgs/reflection_001.gif" />
 
 						<aside class="notes">
-							intro
+							<p>OOP</p>
+							<p>intro</p>
 						</aside>
 					</section>
 
 					<section>
-						Refleksja?
+						<h4>Refleksja?</h4>
 
 						<aside class="notes">
 							<p>PYT: Co to jest refleksja?</p>
-							<p>zdolność programu do analizy/modyfikacji własnej struktury podczas jego uruchomienia</p>
+							<p>zdolność programu do analizy/modyfikacji własnej struktury podczas jego działania</p>
 						</aside>
 					</section>
 
 					<section>
-						<code>get_class($user)</code>
-						<code>get_class_methods(User::class)</code>
-						<code>method_exists($user, 'promoteToAdmin')</code>
+						get_class($user)
+						<code class="fragment">get_class_methods(User::class)</code>
+						<code class="fragment">method_exists($user, 'promoteToAdmin')</code>
+						<code class="fragment">...</code>
 
 						<aside class="notes">
 							<p>proste funkcje globalne w PHP - namiastka refleksji</p>
+							<p>bywają przydatne przy debugowaniu nieznanego kodu/obiektu</p>
 						</aside>
 					</section>
 
 					<section>
-						<h3>Reflection API</h3>
-						<p>$reflector = new ReflectionObject($user)</p>
-						<p>$doc = new ReflectionMethod(User::class)->getDocComment()</p>
+						<h4>Reflection API</h4>
+						<pre class="fragment"><code class="php" data-trim data-noescape>
+							$rObj = new ReflectionObject($user);
+							$rObj->...
+						</code></pre>
+
+						<pre class="fragment"><code class="php" data-trim data-noescape>
+							getName isInternal isUserDefined isAnonymous isInstantiable
+							isCloneable getFileName getStartLine getEndLine getDocComment
+							getConstructor hasMethod getMethod getMethods hasProperty
+							getProperty getProperties hasConstant getConstants 
+							getConstant getReflectionConstant getInterfaces getInterfaceNames
+							isInterface getTraits getTraitNames getTraitAliases isTrait
+							isAbstract isFinal getModifiers isInstance newInstance
+							newInstanceWithoutConstructor newInstanceArgs getParentClass
+							isSubclassOf getStaticProperties getStaticPropertyValue
+							setStaticPropertyValue getDefaultProperties isIterable
+							isIterateable implementsInterface getExtension getExtensionName
+							inNamespace getNamespaceName getShortName
+						</code></pre>
 
 						<aside class="notes">
 							<p>poważniejsza refleksja z Reflection API</p>
 						</aside>
+					</section>
+
+					<section>
+						<p>Parsowanie PhpDoc</p>
+						<pre><code class="php" data-trim data-noescape>
+							$doc = new ReflectionMethod(User::class)->getDocComment();
+						</code></pre>
 					</section>
 
 					<section>
@@ -78,13 +104,13 @@
 					</section>
 
 					<section>
-						<h3>Przykłady</h3>
+						<h3>Zastosowanie</h3>
 
-						<p>Laravel (DI, macros itp.)</p>
-						<p>phpDocumentor</p>
-						<p>PHPUnit</p>
-						<p>Mockery</p>
-						<p>mpociot/laravel-test-factory-helper</p>
+						<p class="fragment">Laravel (DI, macros itp.)</p>
+						<p class="fragment">phpDocumentor</p>
+						<p class="fragment">PHPUnit</p>
+						<p class="fragment">Mockery</p>
+						<p class="fragment">mpociot/laravel-test-factory-helper</p>
 					</section>
 				</section>
 
@@ -95,19 +121,21 @@
 						## PHP ??
 				
 						Note:
+						PHP
 						- co tutaj?
 					</textarea>
 				</section>
 
 				<!-- ###################################### LARAVEL ###################################### -->
 
-				<section data-markdown>
+				<section>
 					<section>
 						<p class="fragment" data-fragment-index="2">tap()</p>
 						<img src="lib/imgs/tap_001.gif" />
 					
 						<aside class="notes">
-							intro
+							<p>Laravel TAP</p>
+							<p>intro</p>
 						</aside>
 					</section>
 
@@ -126,50 +154,7 @@
 					</section>
 
 					<section>
-						<p>może bardziej w tym klimacie przykład? $user = tap($user)->update($request->all());</p>
-						<pre><code class="php" data-trim data-noescape>
-							public function withoutTap()
-							{
-								$user = new User();
-								$user->save();
-								return $user;
-							}
-						</code></pre>
-
-						<aside class="notes">
-							wersja bez tap - wymaga stworzenia zmiennej tymczasowej tylko po to by wywołać na niej metodę
-						</aside>
-					</section>
-
-					<section>
-						<pre><code class="php" data-trim data-noescape>
-							public function withTapA()
-							{
-								return tap(new User(), function($user) {
-									$user->save();
-								});
-							}
-						</code></pre>
-
-						<aside class="notes">
-							wersja z tap - 1
-						</aside>
-					</section>
-
-					<section>
-						<pre><code class="php" data-trim data-noescape>
-							public function withTapB()
-							{
-								return tap(new User())->save();
-							}
-						</code></pre>
-
-						<aside class="notes">
-							wersja z tap - 2 - pod spodek użyje 
-						</aside>
-					</section>
-
-					<section>
+						<p>Minimalna implementacja</p>
 						<pre><code class="php" data-trim data-noescape>
 							function tap($value, $callback)
 							{
@@ -184,7 +169,42 @@
 						</aside>
 					</section>
 
+
 					<section>
+						<pre><code class="php" data-trim data-noescape>
+							public function withoutTap()
+							{
+								$user = new User();
+								$user->markAsVIP();
+								return $user;
+							}
+						</code></pre>
+
+						<pre class="fragment"><code class="php" data-trim data-noescape>
+							public function withTapA()
+							{
+								return tap(new User(), function($user) {
+									$user->markAsVIP();
+								});
+							}
+						</code></pre>
+
+						<pre class="fragment"><code class="php" data-trim data-noescape>
+							public function withTapB()
+							{
+								return tap(new User())->markAsVIP();
+							}
+						</code></pre>
+
+						<aside class="notes">
+							<p>A - wersja bez tap - wymaga stworzenia zmiennej tymczasowej tylko po to by wywołać na niej metodę</p>
+							<p>B - wersja z tap - 1</p>
+							<p>C - wersja z tap - 2 - pod spodem użyje HigherOrderTapProxy</p>
+						</aside>
+					</section>
+
+					<section>
+						<p>Aktualna implementacja w Laravelu</p>
 						<pre><code class="php" data-trim data-noescape>
 							function tap($value, $callback = null)
 							{
@@ -200,51 +220,101 @@
 
 						<aside class="notes">
 							<p>aktualna implementacja w Laravelu</p>
-							<pre>
-								class HigherOrderTapProxy
-								{
-									public $target;
-
-									public function __construct($target)
-									{
-										$this->target = $target; //target in our case is $user model
-									}
-
-									//when we call a method it will trigger this function
-									public function __call($method, $parameters)
-									{
-										$this->target->{$method}(...$parameters); //$user->update($parameters)
-
-										return $this->target; //return $user;
-									}
-								}
-							</pre>
 						</aside>
 					</section>
 
 					<section>
-						method chains
+						<p>In the wild (Laravel Cloud)</p>
+						<pre class="fragment"><code class="php" data-trim data-noescape>
+							public function markAsRunning()
+							{
+								DatabaseBackupRunning::dispatch(tap($this)->update([
+									'status' => 'running',
+								]));
+							}
+						</code></pre>
+						<pre class="fragment"><code class="php" data-trim data-noescape>
+							protected function writeScript()
+							{
+								$hash = md5(str_random(20).$this->script);
+
+								return tap(storage_path('scripts').'/'.$hash, function ($path) {
+									file_put_contents($path, $this->script);
+								});
+							}
+						</code></pre>
 					</section>
 
 					<section>
-						<p>examples in the wild / laravel</p>
-						<p>underscore.js</p>
-						<p>...?</p>
+						<p>Bonus - tap na kolekcjach</p>
+						<pre><code class="php" data-trim data-noescape>
+							return collect($items)
+								->where('active', 1)
+								->tap(function($collection){
+									return var_dump($collection->pluck('name'));
+								})
+								->where('member', 1)
+								->tap(function($collection){
+									return var_dump($collection->pluck('name'));
+								});
+						</code></pre>
 					</section>
+
 
 				</section>
 
 				<!-- ###################################### TOOLS ###################################### -->
 
-				<section data-markdown>
-					<textarea data-template>
-						## Wzorce, dobre praktyki i narzędzia
-				
-						Note:
-						- http requests from PHPStorm
-						- VSCode Live Share
-						- nowy debugbar z hydrated models
-					</textarea>
+				<section>
+					<section>
+						<h4 class="fragment" data-fragment-index="2">HTTP requests</h4>
+						<img src="lib/imgs/requests_001.gif" />
+
+						<aside class="notes">
+							<p>Wzorce, dobre praktyki i narzędzia</p>
+							<p>intro</p>
+						</aside>
+					</section>
+
+					<section>
+						<p>... w PHPStorm?</p>
+					</section>
+
+					<section>
+						<img src="lib/imgs/idea_001.png" />
+					</section>
+
+					<section>
+						<p>składnia</p>
+						<pre><code class="html" data-trim data-noescape>
+							### Get request with a header
+							GET https://httpbin.org/ip
+							Accept: application/json
+
+							### Get request with parameter
+							GET https://httpbin.org/get?show_env=1
+							Accept: application/json
+
+							### Send POST request with json body
+							POST https://httpbin.org/post
+							Content-Type: application/json
+
+							{
+								"id": 999,
+								"value": "content"
+							}
+						</code></pre>
+					</section>
+					
+					<section>
+						<ul>
+							<li>historia requestów i zwróconych wyników</li>
+							<li>środowiska / zmienne środowiskowe</li>
+							<li>szybki diff pomiędzy odpowiedziami serwera</li>
+							<li>nie wychodząc z edytora</li>
+						</ul>
+					</section>
+
 				</section>
 
 				<!-- ###################################### FRONTEND ###################################### -->
@@ -407,7 +477,7 @@
 				controlsTutorial: false,
 				hash: true,
 				overview: true,
-				showNotes: true, // todo - change to false
+				showNotes: false,
 				transition: 'slide', // none/fade/slide/convex/concave/zoom
 				transitionSpeed: 'default', // default/fast/slow
 				// Transition style for full page slide backgrounds
@@ -421,7 +491,7 @@
 				// The "normal" size of the presentation, aspect ratio will be preserved
 				// when the presentation is scaled to fit different resolutions. Can be
 				// specified using percentage units.
-				width: 960,
+				width: 1024,
 				height: 700,
 				// Factor of the display size that should remain empty around the content
 				margin: 0.1,
