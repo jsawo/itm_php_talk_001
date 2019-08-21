@@ -53,10 +53,19 @@
 					</section>
 
 					<section>
-						get_class($user)
-						<code class="fragment">get_class_methods(User::class)</code>
-						<code class="fragment">method_exists($user, 'promoteToAdmin')</code>
-						<code class="fragment">...</code>
+                        <p>Funkcje</p>
+                        <pre class="fragment"><code class="php" data-trim data-noescape>
+                            get_class($user)
+						</code></pre>
+                        <pre class="fragment"><code class="php" data-trim data-noescape>
+                            get_class_methods(User::class)
+						</code></pre>
+                        <pre class="fragment"><code class="php" data-trim data-noescape>
+                            method_exists($user, 'promoteToAdmin')
+						</code></pre>
+                        <pre class="fragment"><code class="php" data-trim data-noescape>
+                            ...
+						</code></pre>
 
 						<aside class="notes">
 							<p>proste funkcje globalne w PHP - namiastka refleksji</p>
@@ -68,7 +77,7 @@
 						<h4>Reflection API</h4>
 						<pre class="fragment"><code class="php" data-trim data-noescape>
 							$rObj = new ReflectionObject($user);
-							$rObj->...
+							$rObj->[TAB]
 						</code></pre>
 
 						<pre class="fragment"><code class="php" data-trim data-noescape>
@@ -88,15 +97,25 @@
 
 						<aside class="notes">
 							<p>poważniejsza refleksja z Reflection API</p>
+							<p>ReflectionObject to tylko jedna z wielu klas dostępnych w Reflection API</p>
 						</aside>
 					</section>
 
 					<section>
-						<p>Parsowanie PhpDoc</p>
-						<pre><code class="php" data-trim data-noescape>
-							$doc = new ReflectionMethod(User::class)->getDocComment();
-						</code></pre>
-					</section>
+                        <p>Przykład</p>
+                        <div class="fragment">
+                            <pre><code class="php" data-trim data-noescape>
+                                $doc = 
+                                  new ReflectionMethod(User::class, 'promote')->getDocComment();
+                            </code></pre>
+                        </div>
+
+                        <aside class="notes">
+                            <p>Przykład użycia refleksji do parsowania PhpDoc</p>
+                            <p>to daje nam dostęp do bloku PhpDoc dla danej metody</p>
+                            <p>możemy to dowolnie sparsować np w w poszukiwaniu @adnotacji</p>
+                        </aside>
+                    </section>
 
 					<section>
 						<h3>Ograniczenia?</h3>
@@ -126,6 +145,9 @@
 						<p class="fragment" data-fragment-index="2">ArrayAccess</p>
 						<img src="lib/imgs/arrayaccess_001.gif" />
 
+                        <aside class="notes">
+                            <p>ArrayAccess</p>
+                        </aside>
 					</section>
 
 					<section>
@@ -367,7 +389,11 @@
 							<li>środowiska / zmienne środowiskowe</li>
 							<li>szybki diff pomiędzy odpowiedziami serwera</li>
 							<li>nie wychodząc z edytora</li>
-						</ul>
+                        </ul>
+                        
+                        <aside class="notes">
+                            <p>czy to zastąpi całkiem postmana? pewnie nie</p>
+                        </aside>
 					</section>
 
 				</section>
@@ -379,19 +405,15 @@
 						<h4 class="fragment" data-fragment-index="2">CSS Variables</h4>
 						<img src="lib/imgs/cssprops_001.gif" />
 
-						<!-- <div style="border: solid 1px white; width: 500px; height: 400px; margin: auto; padding: 1ex;">
-							tu wstaw marginalnie zabawnego gifa nawiązującego do treści
-						</div> -->
-					
 						<aside class="notes">
 							<p>intro</p>
 						</aside>
 					</section>
 
 					<section>
-						<h4 class="fragment" data-fragment-index="2">CSS Custom Properties</h4>
+						<h4>SASS Variables</h4>
 
-						<pre class="fragment"><code class="css" data-trim data-noescape>
+						<pre><code class="css" data-trim data-noescape>
 							$brandColor: #F06D06;
 
 							.main-header {
@@ -401,7 +423,79 @@
 							    background-color: $brandColor;
 							}
 						</code></pre>
+
+						<pre class="fragment"><code class="css" data-trim data-noescape>
+                            .main-header {
+                                color: #F06D06;
+                            }
+                            .main-footer {
+                                background-color: #F06D06;
+                            }						
+                        </code></pre>
 						
+						<aside class="notes">
+							<p>intro</p>
+						</aside>
+					</section>
+
+					<section>
+						<h4>CSS Custom Properties</h4>
+
+						<pre><code class="css" data-trim data-noescape>
+                        :root {
+                            --main-color: #F06D06;
+                        }
+
+                        .main-header {
+                            color: var(--main-color);
+                        }
+                        .main-footer {
+                            background-color: var(--main-color);
+                        }
+						</code></pre>
+
+						<aside class="notes">
+							<p>intro</p>
+						</aside>
+					</section>
+
+					<section>
+						<h4>Po co?</h4>
+
+                        <ul>
+                            <li class="fragment">nie wymaga preprocesora</li>
+                            <li class="fragment">podlegają kaskadzie
+                                <pre><code class="css" data-trim data-noescape>
+                                body { --size: 20px; }
+                                #app { --size: 40px; }
+                                #app .box { height: var(--size); }
+                                </code></pre>
+                            </li>
+                            <li class="fragment">można używać inline
+                                <pre><code class="php" data-trim data-noescape>
+                                    style="size: var(--cta-size)"
+                                </code></pre>
+                            </li>
+                            <li class="fragment">fallback values
+                                <pre><code class="css" data-trim data-noescape>
+                                    --accent: green;
+                                    background: red;
+                                    background: var(--accent, blue)
+                                </code></pre>
+                            </li>
+                            <li class="fragment">jeśli ich wartość się zmieni (np. media queries), przeglądarka rozpropaguje nową wartość</li>
+                            <li class="fragment">można się do nich dostać z poziomu JS</li>
+                        </ul>
+
+						<aside class="notes">
+							<p>intro</p>
+						</aside>
+					</section>
+
+					<section>
+						<h4>Browser support</h4>
+                        <img src="lib/imgs/caniuse_001.png" />
+
 						<aside class="notes">
 							<p>intro</p>
 						</aside>
